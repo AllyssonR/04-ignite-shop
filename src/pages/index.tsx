@@ -1,6 +1,8 @@
 import Image from 'next/image'
+import { GetServerSideProps } from 'next'
 import { HomeContainer, Product } from '../styles/pages/home'
 import { useKeenSlider } from 'keen-slider/react'
+import { stripe } from '../lib/stripe'
 import camiseta1 from '../assets/1.png'
 import camiseta2 from '../assets/2.png'
 import camiseta3 from '../assets/3.png'
@@ -44,4 +46,21 @@ export default function Home() {
       </Product>
     </HomeContainer>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const response = await stripe.products.list()
+  const products = response.data.map((product) => {
+    return {
+      id: product.id,
+      name: product.name,
+      imageUrl: product.images[0],
+    }
+  })
+  console.log(response)
+  return {
+    props: {
+      list: [1, 2, 3],
+    },
+  }
 }
